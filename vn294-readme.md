@@ -1,4 +1,12 @@
 ## Building a Wine Quality Prediction Model with Spark on AWS
+### Description:
+This project focuses on building a hand quality prediction ML model in Spark on 
+top of AWS, trained in parallel with the EC2 model. The model will be saved and retrieved in 
+a Spark application running on an EC2 instance. The work done in Python on Ubuntu Linux 
+uses the data provided for training and validation, where performance is tested based on F1 
+scores The Spark application will use MLlib for training, and the validation data will contribute 
+to model performance has improved. Additionally, Docker container will be built for predictive 
+application and facilitate effortless deployment across environments.
 ### Cluster Creation:
 1. Login to AWS Account and start the lab
 2. Click on AWS Console
