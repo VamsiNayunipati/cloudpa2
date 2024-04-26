@@ -41,4 +41,3 @@
 33. After the successful execution we will get the testing results.
 
 **Note:** All the process we did in the EC2 Connected Terminal above is without Docker.
-
