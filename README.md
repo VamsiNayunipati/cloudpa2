@@ -39,6 +39,7 @@
 
 ### Without Docker Execution:
 1. Once the upload process is done, go to the EC2 connected terminal and run the command:
+    
     `spark-submit s3://mypa2bucket/training.py` (Training code)
 2. After training code, run the testing code using same command i.e.,                                
 `spark-submit s3://mypa2bucket/testing.py` (Testing code)
