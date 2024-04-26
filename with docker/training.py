@@ -10,18 +10,14 @@ from pyspark.sql.functions import col
 def clean_data(df):
     return df.select(*(col(c).cast("double").alias(c.strip("\"")) for c in df.columns))
 
-
 def main():
     spark = SparkSession.builder.appName("WineQualityPrediction").getOrCreate()
     sc = spark.sparkContext
     sc.setLogLevel("ERROR")
-
     spark._jsc.hadoopConfiguration().set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
-
     input_path = "TrainingDataset.csv"
     valid_path = "ValidationDataset.csv"
     output_path = "s3://mypa2bucket/result"
-
     print(f"Reading training CSV file from {input_path}")
     train_df = (
         spark.read.format("csv")
@@ -30,10 +26,9 @@ def main():
         .option("inferschema", True)
         .load(input_path)
     )
-
     train_df = clean_data(train_df)
-
     print(f"Reading validation CSV file from {valid_path}")
+
     valid_df = (
         spark.read.format("csv")
         .option("header", True)
@@ -43,7 +38,6 @@ def main():
     )
 
     valid_df = clean_data(valid_df)
-
     all_features = [
         "fixed acidity",
         "volatile acidity",
@@ -60,10 +54,8 @@ def main():
 
     assembler = VectorAssembler(inputCols=all_features, outputCol="features")
     indexer = StringIndexer(inputCol="quality", outputCol="label")
-
     train_df.cache()
     valid_df.cache()
-
     rf = RandomForestClassifier(
         labelCol="label",
         featuresCol="features",
@@ -74,9 +66,7 @@ def main():
     )
 
     pipeline = Pipeline(stages=[assembler, indexer, rf])
-
     model = pipeline.fit(train_df)
-
     predictions = model.transform(valid_df)
     evaluator = MulticlassClassificationEvaluator(
         labelCol="label", predictionCol="prediction", metricName="accuracy"
@@ -100,7 +90,6 @@ def main():
     crossval = CrossValidator(
         estimator=pipeline, estimatorParamMaps=paramGrid, evaluator=evaluator, numFolds=2
     )
-
     cvmodel = crossval.fit(train_df)
     model = cvmodel.bestModel
 

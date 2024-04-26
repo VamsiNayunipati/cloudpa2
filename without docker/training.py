@@ -1,5 +1,4 @@
 import sys
-
 from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
 from pyspark.ml import Pipeline
 from pyspark.ml.feature import VectorAssembler
@@ -15,15 +14,10 @@ def clean_data(df):
 
 if __name__ == "__main__":
     print("Starting Spark Application")
-
-
     spark = SparkSession.builder.appName("WineQualityPrediction").getOrCreate()
-
     sc = spark.sparkContext
     sc.setLogLevel('ERROR')
-
     spark._jsc.hadoopConfiguration().set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
-
 
     input_path = "s3://mypa2bucket/TrainingDataset.csv"
     valid_path = "s3://mypa2bucket/ValidationDataset.csv"
@@ -38,7 +32,6 @@ if __name__ == "__main__":
           .load(input_path))
     
     train_data_set = clean_data(df)
-
     print(f"Reading validation CSV file from {valid_path}")
     df = (spark.read
           .format("csv")
@@ -48,7 +41,6 @@ if __name__ == "__main__":
           .load(valid_path))
     
     valid_data_set = clean_data(df)
-
     all_features = ['fixed acidity', 'volatile acidity', 'citric acid', 'residual sugar',
                     'chlorides', 'free sulfur dioxide', 'total sulfur dioxide', 'density',
                     'pH', 'sulphates', 'alcohol', 'quality']
@@ -84,7 +76,6 @@ if __name__ == "__main__":
                                                   predictionCol='prediction', 
                                                   metricName='accuracy')
 
-   
     accuracy = evaluator.evaluate(predictions)
     print(f'Test Accuracy of wine prediction model = {accuracy}')
     
@@ -113,7 +104,6 @@ if __name__ == "__main__":
     print("Saving the best model to new param `model`")
     model = cvmodel.bestModel
     
-
     predictions = model.transform(valid_data_set)
     results = predictions.select(['prediction', 'label'])
     accuracy = evaluator.evaluate(predictions)
@@ -126,5 +116,4 @@ if __name__ == "__main__":
     model_path = output_path
     model.write().overwrite().save(model_path)
     
-
     sys.exit(0)
